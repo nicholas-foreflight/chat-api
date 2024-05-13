@@ -1,0 +1,27 @@
+#
+#
+#
+
+spring:
+  application.name: pete
+  cloud:
+    openfeign.client.config:
+          default: &default
+            connectTimeout: 5000
+            readTimeout: 5000
+            loggerLevel: full
+          test:
+            <<: *default
+            url: https://httpbin.org
+          openai: &openai
+            <<: *default
+            url: https://api.openai.com
+            defaultRequestHeaders:
+              Authorization: Bearer ${SPRING_AI_OPENAI_API_KEY}
+          openai-assistants:
+            <<: *openai
+
+
+logging:
+  level:
+    com.foreflight.genai.pete.client: debug
