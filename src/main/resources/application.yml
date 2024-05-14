@@ -18,6 +18,7 @@ spring:
             url: https://api.openai.com
             defaultRequestHeaders:
               Authorization: Bearer ${SPRING_AI_OPENAI_API_KEY}
+              OpenAI-Beta: assistants=v2
           openai-assistants:
             <<: *openai
 
