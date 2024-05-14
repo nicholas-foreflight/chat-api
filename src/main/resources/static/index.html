@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat UI</title>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        body, html {
+            height: 100%; /* Make sure the html and body tags cover the full height */
+            margin: 0; /* Reset default margin */
+        }
+
+        body {
+            background-image: url('./background.svg');
+            background-size: cover; /* Cover the entire size of the content */
+            background-color: lightslategrey;
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed; /* Fix the background image to the viewport */
+        }
+    </style>
+</head>
+<body>
+
+<div id="chatApp"></div>
+
+
+<script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const ChatApp = () => {
+        const [threadId, setThreadId] = useState(new URLSearchParams(window.location.search).get('threadId'));
+        const [messages, setMessages] = useState([]);
+        const [userInput, setUserInput] = useState('');
+
+        useEffect(() => {
+            if (threadId) {
+                // Fetch existing thread
+                fetch(`/threads/${threadId}`)
+                        .then(response => response.json())
+                        .then(data => setMessages(data.messages))
+                        .catch(console.error); // Handle errors appropriately in production
+            }
+        }, [threadId]);
+
+        const handleInputChange = (event) => {
+            setUserInput(event.target.value);
+        };
+
+        const handleSubmit = () => {
+            const message = { message: userInput };
+
+            fetch(threadId ? `/threads/${threadId}` : '/threads', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(message)
+            })
+                    .then(response => response.json())
+                    .then(data => {
+                        setMessages([...messages, data]);
+                        setThreadId(data.threadId);
+                        setUserInput('');
+                        window.history.pushState(null, '', `?threadId=${data.threadId}`);
+                    })
+                    .catch(console.error); // Handle errors appropriately in production
+        };
+
+        return (
+                <div className="ui raised very padded container" style={{ marginTop: '200px' }}>
+                    {/* Avatar Container */}
+                    <div className="ui horizontal segments">
+                        <div className="ui segment ">
+                            <div className="ui compact segments">
+                                <div className="ui segment" style={{ width: '200px' }}>
+                                    <img className="ui medium circular  image" src="./pete.png" />
+                                </div>
+                                <div className="ui message" style={{ width: '200px' }}>
+                                    <p>Hey there! I'm Pete the Pilot, the fearless navigator of the digital skies in the world of ForeFlight. I make the complex seem simple and the confusing clear. With me by your side, navigating through ForeFlight will be smoother than a perfect landing on a calm day!</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="ui segment ">
+
+                        </div>
+                    </div>
+
+                    <div>
+                        {/* Scrollable Chat Container */}
+                        <div className="ui segment" style={{ overflowY: 'scroll', height: '300px' }}>
+                            {messages.map((msg, index) => (
+                                    <div
+                                            className={msg.role === 'assistant' ? 'ui floating message' : 'ui floating blue message'}
+                                            key={index}
+                                            style={{
+                                                textAlign: msg.role === 'assistant' ? 'left' : 'right',
+                                                marginLeft: msg.role === 'assistant' ? '0px' : '40px',
+                                                marginRight: msg.role === 'assistant' ? '40px' : '0px'
+                                            }}
+                                            dangerouslySetInnerHTML={{ __html: marked.parse(msg.message) }}
+                                    />
+                            ))}
+                        </div>
+
+                        {/* User Input Container */}
+                        <div className="ui fluid icon input">
+                            <input
+                                    type="text"
+                                    placeholder="Question from user..."
+                                    onChange={handleInputChange}
+                                    value={userInput}
+                            />
+                            <button className="ui blue button" onClick={handleSubmit}>
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+
+
+
+                    {/* Configuration Container */}
+
+                    <h5 className="ui top attached header">
+                        Driver Configuration
+                    </h5>
+                    <div className="ui attached segment">
+                        <div className="ui labeled input" style={{marginBottom: '5px'}}>
+                            <div className="ui label">http://</div>
+                            <input type="text" placeholder="10.0.0.1:8000" />
+                        </div>
+                        <button className="ui button right floated">Update</button>
+                    </div>
+                    <div className="ui bottom attached warning message">
+                        <i className="warning icon"></i>
+                        You have not defined a valid Driver. So, you cannot use Device interaction.
+                    </div>
+                </div>
+        );
+    };
+
+    ReactDOM.render(<ChatApp />, document.getElementById('chatApp'));
+</script>
+
+</body>
+</html>
