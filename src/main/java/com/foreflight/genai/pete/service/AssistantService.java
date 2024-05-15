@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AssistantService {
@@ -28,6 +29,10 @@ public class AssistantService {
 
     public OpenAIThreadDto getThread() {
         return openAIClient.createThread();
+    }
+
+    public OpenAIThreadDto getThread(String threadId) {
+        return openAIClient.getThread(threadId);
     }
 
     public MessagesHistoryDto getChat(String threadId) {
@@ -72,5 +77,11 @@ public class AssistantService {
                 .role("assistant")
                 .message(response.getData().get(0).getContent().get(0).getText().getValue())
                 .build();
+    }
+
+    public void saveThreadMetadata(String id, Map<String, Object> metadata) {
+        openAIClient.saveThread(OpenAIThreadDto.builder()
+                .metadata(metadata)
+                .build());
     }
 }

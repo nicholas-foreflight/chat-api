@@ -13,6 +13,9 @@ spring:
           test:
             <<: *default
             url: https://httpbin.org
+          driver:
+            <<: *default
+            url: https://placeholder.com
           openai: &openai
             <<: *default
             url: https://api.openai.com

@@ -30,7 +30,3 @@
 
 2. **UI Landing Page**
     - Visit the UI landing page at [localhost:8080/](http://localhost:8080/) to interact with the application.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details
