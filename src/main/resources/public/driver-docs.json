@@ -1,0 +1,387 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Mobile App Driver",
+    "description": "Communicate between any iOS App with the following endpoints",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/start": {
+      "post": {
+        "tags": [
+          "Controller"
+        ],
+        "summary": "Initialize new session",
+        "description": "Start a new session",
+        "operationId": "start_start_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartRequestSchema"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stop": {
+      "post": {
+        "tags": [
+          "Controller"
+        ],
+        "summary": "Terminate App and Session",
+        "description": "Stop the current session",
+        "operationId": "stop_stop_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/status": {
+      "head": {
+        "tags": [
+          "Controller"
+        ],
+        "summary": "Check Status",
+        "description": "Check the status of the current session",
+        "operationId": "status_status_head",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/capture": {
+      "get": {
+        "tags": [
+          "Actions"
+        ],
+        "summary": "Screenshot device",
+        "description": "Capture a screenshot of the current screen",
+        "operationId": "capture_capture_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tap": {
+      "post": {
+        "tags": [
+          "Actions"
+        ],
+        "summary": "Tap on device",
+        "description": "Tap on any (x,y) point on the screen",
+        "operationId": "tap_tap_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TapRequestSchema"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Screenshot of the screen after tap with an orange indicator of the location of the tap"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/swipe": {
+      "post": {
+        "tags": [
+          "Actions"
+        ],
+        "summary": "Swipe on device",
+        "description": "Swipe between any (x,y) points on the screen",
+        "operationId": "swipe_swipe_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SwipeRequestSchema"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Screenshot of the screen after swipe with an orange indicator of the location of the swipe"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "tags": [
+          "Utility"
+        ],
+        "summary": "View Image Page",
+        "operationId": "view_image__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/window": {
+      "get": {
+        "tags": [
+          "Utility"
+        ],
+        "summary": "Get screen size",
+        "operationId": "get_window_size_window_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/port": {
+      "get": {
+        "tags": [
+          "Utility"
+        ],
+        "summary": "Get port",
+        "operationId": "port_port_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ip": {
+      "get": {
+        "tags": [
+          "Utility"
+        ],
+        "summary": "Get ip",
+        "operationId": "ip_ip_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "StartRequestSchema": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "title": "Username",
+            "default": "pilotpete@foreflight.com"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password",
+            "default": "gofly123"
+          },
+          "environment": {
+            "type": "string",
+            "title": "Environment",
+            "default": "QA"
+          },
+          "device_udid": {
+            "type": "string",
+            "title": "Device Udid",
+            "default": "00008110-0006150A1E03801E"
+          },
+          "bundle_id": {
+            "type": "string",
+            "title": "Bundle Id",
+            "default": "com.foreflight.ForeFlightMobile"
+          }
+        },
+        "type": "object",
+        "title": "StartRequestSchema"
+      },
+      "SwipeRequestSchema": {
+        "properties": {
+          "points": {
+            "items": {},
+            "type": "array",
+            "title": "Points",
+            "default": [
+              {
+                "x": 400,
+                "y": 200
+              },
+              {
+                "x": 300,
+                "y": 500
+              },
+              {
+                "x": 200,
+                "y": 200
+              },
+              {
+                "x": 100,
+                "y": 500
+              }
+            ]
+          },
+          "duration": {
+            "type": "integer",
+            "title": "Duration",
+            "default": 3
+          }
+        },
+        "type": "object",
+        "title": "SwipeRequestSchema"
+      },
+      "TapRequestSchema": {
+        "properties": {
+          "x": {
+            "type": "integer",
+            "title": "X",
+            "default": 200
+          },
+          "y": {
+            "type": "integer",
+            "title": "Y",
+            "default": 200
+          }
+        },
+        "type": "object",
+        "title": "TapRequestSchema"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
