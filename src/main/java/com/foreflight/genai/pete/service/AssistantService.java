@@ -19,13 +19,16 @@ import java.util.Map;
 
 @Service
 public class AssistantService {
-    private static final String FILE_ID_FOREFLIGHT_PILOT_GUIDE = "file-tTPItaQcF3XuejdxPIArq5yl"; //NOSONAR
     private static final String ASSISTANT_ID_PILOT_PETE_3_5 = "asst_PHuD00M9tkqC9NYKwgkXlTVo"; // gpt-3.5-turbo //NOSONAR
     private static final String ASSISTANT_ID_PILOT_PETE_4_o = "asst_OzdhCYLi3ww5v0BIR2kxKnHJ"; // gpt-4o-2024-05-13 //NOSONAR
     private static final String ASSISTANT_ID_IN_USE = ASSISTANT_ID_PILOT_PETE_3_5;
 
     @Autowired
+    private PromptService promptService;
+
+    @Autowired
     private OpenAIClient openAIClient;
+
 
     public OpenAIThreadDto getThread() {
         return openAIClient.createThread();
@@ -33,6 +36,13 @@ public class AssistantService {
 
     public OpenAIThreadDto getThread(String threadId) {
         return openAIClient.getThread(threadId);
+    }
+
+    /*
+     * For first time request
+     */
+    public MessageDto postChat(@NonNull UserChatRequestDto chatRequestDto) {
+        return postChat(getThread().getId(), chatRequestDto, false);
     }
 
     public MessagesHistoryDto getChat(String threadId) {
@@ -51,15 +61,13 @@ public class AssistantService {
         return MessagesHistoryDto.builder().messages(messages).build();
     }
 
-    public MessageDto postChat(@NonNull UserChatRequestDto chatRequestDto) {
-        return postChat(getThread().getId(), chatRequestDto);
-    }
-
     @SneakyThrows
-    public MessageDto postChat(@NonNull String threadId, @NonNull  UserChatRequestDto chatRequestDto) {
+    public MessageDto postChat(@NonNull String threadId, @NonNull  UserChatRequestDto chatRequestDto, Boolean isDriverRunning) {
+        isDriverRunning = isDriverRunning == null ? isDriverRunning(threadId) : isDriverRunning;
+
         openAIClient.addMessage(threadId, OpenAIThreadMessageDto.builder()
                 .role("user")
-                .content(chatRequestDto.getMessage())
+                .content(promptService.buildAssistantHowToPrompt(isDriverRunning, chatRequestDto.getMessage()))
                 .build());
 
         OpenAIThreadRunDto run = openAIClient.createRun(threadId, OpenAIThreadRunDto.builder()
@@ -79,8 +87,13 @@ public class AssistantService {
                 .build();
     }
 
+    private boolean isDriverRunning(String threadId) {
+        return false;
+    }
+
     public void saveThreadMetadata(String id, Map<String, Object> metadata) {
         openAIClient.saveThread(OpenAIThreadDto.builder()
+                .id(id)
                 .metadata(metadata)
                 .build());
     }
