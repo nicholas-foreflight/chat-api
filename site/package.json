@@ -19,7 +19,7 @@
   },
   "scripts": {
     "start": "../node_modules/.bin/react-scripts start",
-    "build": "BUILD_PATH='./dist' react-scripts build",
+    "build": "BUILD_PATH='../src/main/resources/static' react-scripts build",
     "test": "../node_modules/.bin/react-scripts test",
     "eject": "../node_modules/.bin/react-scripts eject"
   },
