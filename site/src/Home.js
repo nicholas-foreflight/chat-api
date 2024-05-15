@@ -6,8 +6,8 @@ const Home = ({setThreadId, threadId}) => {
   
     return (
         <>
-            <Chat threadId={threadId} setThreadId={setThreadId} />
             <Driver />
+            <Chat threadId={threadId} setThreadId={setThreadId} />
         </>
     );
 };

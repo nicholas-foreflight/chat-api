@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Header, Button, Container, Dropdown, Message, Segment } from "semantic-ui-react";
+import { Header, Button, Grid, Container, Dropdown, Message, Segment } from "semantic-ui-react";
 import Screen from './Screen';
 
 const Driver = () => {
@@ -35,30 +35,47 @@ const Driver = () => {
             <Container>
                 <Header className="top attached">App Driver</Header>
                 <Segment attached compact>
-                    <Dropdown
-                        placeholder='Select Driver'
-                        fluid
-                        selection
-                        defaultValue={driverList && driverList[0].ip}
-                        options={driverList && driverList.map(driver => ({
-                            key: driver.name,
-                            text: `${driver.name} (${driver.ip})`,
-                            value: driver.ip,
-                        }))}
-                        onChange={(e, { value }) => setDriverSelected(value)}
-                        style={{ marginBottom: '5px' }}
-                    />
-                    <Button primary onClick={() => setDriverIP(driverSelected)} floated='right' disabled={isDriverConnected || driverConfigError || !driverSelected}>
-                        Connect
-                    </Button>
-                    {isDriverConnected &&
-                        <Button positive={false} onClick={() => {
-                            setDriverIP()
-                            setIsDriverConnected(false)
-                        }} floated='right'>
-                            Disconnect
-                        </Button>}
-                </Segment>
+                <Grid>
+                    <Grid.Row>
+                        <Grid.Column width={12}>
+                            <Dropdown
+                                placeholder='Select Driver'
+                                fluid
+                                selection
+                                defaultValue={driverList && driverList[0].ip}
+                                options={driverList && driverList.map(driver => ({
+                                    key: driver.name,
+                                    text: `${driver.name} (${driver.ip})`,
+                                    value: driver.ip,
+                                }))}
+                                onChange={(e, { value }) => setDriverSelected(value)}
+                                style={{ marginBottom: '5px' }}
+                            />
+                        </Grid.Column>
+                        <Grid.Column width={4}>
+                            <Button
+                                primary
+                                onClick={() => setDriverIP(driverSelected)}
+                                floated='right'
+                                disabled={isDriverConnected || driverConfigError || !driverSelected}
+                            >
+                                Connect
+                            </Button>
+                            {isDriverConnected &&
+                                <Button
+                                    positive={false}
+                                    onClick={() => {
+                                        setDriverIP();
+                                        setIsDriverConnected(false);
+                                    }}
+                                    floated='right'
+                                >
+                                    Disconnect
+                                </Button>}
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
+            </Segment>
                 {driverIP && (
                     <Container>
                         <Segment attached>
