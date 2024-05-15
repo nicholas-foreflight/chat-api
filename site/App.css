@@ -1,0 +1,35 @@
+/* App.css */
+
+body{
+  padding: 0;
+  margin: 0;
+}
+
+.App {
+  font-family: 'Arial', sans-serif;
+}
+
+.App-header {
+  text-align: center;
+  padding: 20px;
+}
+
+.sidebar-toggle {
+  padding: 5px !important;
+}
+
+.assistant-message {
+  background-color: #f1f1f1;
+  border-radius: 10px;
+  padding: 1em;
+  margin-bottom: 1em;
+  max-width: 80%;
+}
+
+.user-message {
+  background-color: #d4eaff;
+  border-radius: 10px;
+  padding: 1em;
+  margin-bottom: 1em;
+  max-width: 80%;
+}
