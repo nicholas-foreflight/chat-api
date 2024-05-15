@@ -1,34 +1,42 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {Button, Container, Divider, Grid, Header, Input, Message, Segment} from "semantic-ui-react";
-import {FaRobot} from "react-icons/fa6";
+import { Button, Container, Divider, Grid, Header, Input, Message, Segment } from "semantic-ui-react";
+import { FaRobot } from "react-icons/fa6";
 import Lottie from "lottie-react";
 import loading from "./loading.json";
+import styled from "styled-components"
+import ReactMarkdown from 'react-markdown';
 
 
-const Home = () =>{
+const Dots = styled.span`
+  &::after {
+    display: inline-block;
+    animation: ellipsis 1.25s infinite;
+    content: "•";
+    width:3em;
+    font-size: 0.8em;
+    text-align: left;
+  }
+  @keyframes ellipsis {
+    0% {
+      content: "•";
+    }
+    33% {
+      content: "••";
+    }
+    66% {
+      content: "•••";
+    }
+  }
+`
+
+const Home = () => {
     const [isHiddenConfig, setIsHiddenConfig] = useState(false);
     const [isDriverConnected, setIsDriverConnected] = useState(false);
     const [isDriverInvalid, setIsDriverInvalid] = useState(false);
     const [userInput, setUserInput] = useState('');
+    const [thinking, setThinking] = useState(false);
     const [messages, setMessages] = useState([
-        { role: 'assistant', message: 'Welcome to Pilot Pete!' },
-        { role: 'user', message: 'Get the latest METAR for KJFK' },
-        { role: 'assistant', message: 'Did you want a screenshot too?' },
-        { role: 'user', message: 'Yes that would be wicked neat' },
-        { role: 'assistant', message: 'Yes that would be wicked neat' },
-        { role: 'user', message: 'Yes that would be wicked neatuld be wicked neatuld be wicked neatuld be wicked neat' },
-        { role: 'user', message: 'Yes that would be wicked neat' },
-        { role: 'user', message: 'Yes that would be wicked neat' },
-        { role: 'assistant', message: 'Yes that would be wicked neatuld be wicked neatuld be wicked neatuld be wicked neat' },
-        { role: 'user', message: 'Yes that would be wicked neat' },
-        { role: 'user', message: 'Yes that would be wicked neat' },
-        { role: 'assistant', message: 'Yes that would be wicked neat' },
-        { role: 'user', message: 'Yes that would be wicked neatuld be wicked neatuld be wicked neatuld be wicked neat' },
-        { role: 'user', message: 'Yes that would be wicked neat' },
-        { role: 'user', message: 'Yes that would be wicked neat' },
-        { role: 'assistant', message: 'Yes that would be wicked neatuld be wicked neatuld be wicked neatuld be wicked neat' },
-        { role: 'user', message: 'Yes that would be wicked neat' },
-        { role: 'user', message: 'Yes that would be wicked neat' },
+        { role: 'assistant', message: 'Welcome to Pilot Pete! Ask me any questions you have about ForeFlight' },
     ]);
 
     const messagesEndRef = useRef(null);
@@ -45,9 +53,32 @@ const Home = () =>{
         setUserInput(e.target.value);
     };
 
+    const sendChatMessage = (message) => {
+        setThinking(true);
+        setMessages(messages => [...messages, { role: 'user', message }]);
+        console.log('Sending message to pete: ', message);
+        fetch('http://localhost:8080/threads', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({ message })
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Received response from pete: ', data);
+                setMessages(messages => [...messages, { role: 'assistant', message: data.message }]);
+                setThinking(false);
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+    }
+
     const handleSubmit = () => {
-        setMessages([...messages, { role: 'user', message: userInput }]);
         setUserInput('');
+        sendChatMessage(userInput);
     };
     return (
         <>
@@ -56,7 +87,7 @@ const Home = () =>{
                 {isHiddenConfig && (
                     <Container>
                         <Segment attached>
-                            <Screen setIsActive={setIsDriverConnected} setIsDriverInvalid={setIsDriverInvalid}/>
+                            <Screen setIsActive={setIsDriverConnected} setIsDriverInvalid={setIsDriverInvalid} />
                         </Segment>
                     </Container>
                 )}
@@ -67,7 +98,7 @@ const Home = () =>{
                         <Segment attached>
                             <Input
                                 label='http://'
-                                placeholder='10.0.0.1:8000'
+                                placeholder='10.0.0.1:8001'
                                 style={{ marginBottom: '5px' }}
                             />
                             <Button primary onClick={() => setIsHiddenConfig(!isHiddenConfig)} floated='right' >Connect</Button>
@@ -112,22 +143,38 @@ const Home = () =>{
                             <Message
                                 key={index}
                                 compact={true}
-                                content={msg.message}
+                                content={
+                                    <ReactMarkdown>{msg.message}</ReactMarkdown>
+                                  }
                                 className={msg.role === 'assistant' ? 'assistant-message' : 'user-message'}
                                 style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
                                     alignSelf: msg.role === 'assistant' ? 'flex-start' : 'flex-end',
                                     backgroundColor: msg.role === 'assistant' ? '#f1f1f1' : '#d4eaff',
-                                    borderRadius: '10px',
-                                    padding: '1rem',
-                                    marginBottom: '1em',
                                     maxWidth: '75%',
                                     wordBreak: 'break-word',
                                     whiteSpace: 'pre-wrap'
                                 }}
                             />
                         ))}
+                        {thinking && (
+                            <Message
+                                key={-1}
+                                compact
+                                content={<Dots></Dots>}
+                                className="assistant-message"
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    alignSelf: 'flex-start',
+                                    backgroundColor: '#f1f1f1',
+                                    borderRadius: '10px',
+                                    padding: '1rem',
+                                    marginBottom: '1em',
+                                    maxWidth: '75%',
+                                    wordBreak: 'break-word',
+                                    whiteSpace: 'pre-wrap',
+                                }}
+                            />)}
                         <div ref={messagesEndRef} />
                     </Container>
                     <Divider />
@@ -135,12 +182,21 @@ const Home = () =>{
                         <Grid>
                             <Grid.Row>
                                 <Grid.Column width={14}>
+                                <form onSubmit={(e)=>{
+                                        e.preventDefault();
+                                        handleSubmit(); 
+                                }} style={{ width: '100%' }}>
                                     <Input
+                                        tabIndex={0}
+                                        disabled={thinking}
                                         fluid
                                         placeholder='Type your message...'
                                         value={userInput}
                                         onChange={handleInputChange}
-                                    />
+                                        loading={thinking}
+                                        style={{ paddingRight: '40px' }}
+                                        />
+                                        </form>
                                 </Grid.Column>
                                 <Grid.Column width={2}>
                                     <Button
@@ -148,10 +204,13 @@ const Home = () =>{
                                         content='Submit'
                                         onClick={handleSubmit}
                                         fluid
+                                        disabled={thinking}
                                     />
                                 </Grid.Column>
                             </Grid.Row>
+
                         </Grid>
+
                     </Container>
                 </Segment>
             </Container>
@@ -224,16 +283,16 @@ const Screen = ({ setIsActive, setIsDriverInvalid }) => {
 
     return (
         image === '' ? (
-                <div style={{
-                    width: "1200px",
-                    height: "760px",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center"
-                }}>
-                    <Lottie animationData={loading}  style={{ width: "120px"}}/>
-                </div>
-            ) :
+            <div style={{
+                width: "1200px",
+                height: "760px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center"
+            }}>
+                <Lottie animationData={loading} style={{ width: "120px" }} />
+            </div>
+        ) :
             (
                 <img
                     src={image}
@@ -257,7 +316,5 @@ const Screen = ({ setIsActive, setIsDriverInvalid }) => {
 
     );
 }
-
-
 
 export default Home;
