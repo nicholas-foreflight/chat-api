@@ -15,7 +15,8 @@ import { FaPlaneArrival, FaRobot } from "react-icons/fa6";
 import Lottie from 'lottie-react';
 import loading from "./loading.json";
 import Project from './Project';
-import Documentation from './Documentation';
+import ChatDocumentation from './ChatDocumentation';
+import DriverDocumentation from './DriverDocumentation';
 
 
 const App = () => {
@@ -34,13 +35,13 @@ const App = () => {
             }>Project</Menu.Item>
           <Dropdown item simple text='Documentation'>
             <Dropdown.Menu>
-              <Dropdown.Item as='a' onClick={()=>{setSelectedWindow('documentation')}}>Driver Docs</Dropdown.Item>
-              <Dropdown.Item as='a' onClick={()=>{setSelectedWindow('documentation')}}>Chat Docs</Dropdown.Item>
+              <Dropdown.Item as='a' onClick={()=>{setSelectedWindow('documentation-driver')}}>Driver Docs</Dropdown.Item>
+              <Dropdown.Item as='a' onClick={()=>{setSelectedWindow('documentation-chat')}}>Chat Docs</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
         </Container>
       </Menu>
-      {selectedWindow === 'home' ? <Home/> : (selectedWindow === 'project' ? <Project/> : (selectedWindow === 'documentation' ? <Documentation/> : <></> ) )}
+      {selectedWindow === 'home' ? <Home/> : (selectedWindow === 'project' ? <Project/> : (selectedWindow === 'documentation-chat' ? <ChatDocumentation/> : <DriverDocumentation/> ) )}
       {}
       
     </div>
