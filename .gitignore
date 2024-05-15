@@ -39,3 +39,4 @@ out/
 *node_modules*
 package-lock.json
 dist/
+src/main/resources/static/** 
