@@ -1,6 +1,8 @@
 package com.foreflight.genai.pete.client.dto.openai;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,6 +12,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OpenAIThreadMessageResponseDto {
     private String object;
     private List<MessageData> data;
@@ -17,6 +21,8 @@ public class OpenAIThreadMessageResponseDto {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class MessageData {
         private String id;
         private String object;
@@ -31,6 +37,8 @@ public class OpenAIThreadMessageResponseDto {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Content {
         private String type;
         private Text text;
@@ -39,6 +47,8 @@ public class OpenAIThreadMessageResponseDto {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Text {
         private String value;
     }
