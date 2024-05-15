@@ -6,7 +6,7 @@ import remarkGfm from 'https://esm.sh/remark-gfm@4'
 import Dots from './Dots';
 
 
-const Chat = ({threadId, setThreadId}) => {
+const Chat = ({ threadId, setThreadId }) => {
     const welcomeMessage = [{ role: 'assistant', message: 'Welcome to Pilot Pete! Ask me any questions you have about ForeFlight' }];
 
     // State to store the user's input in the message field
@@ -17,7 +17,7 @@ const Chat = ({threadId, setThreadId}) => {
 
     // State to store the angry status of the assistant (true when the assistant is angry, false otherwise)
     const [angry, setAngry] = useState(false);
-    
+
     // State to store the messages in the chat window
     const [messages, setMessages] = useState(welcomeMessage);
 
@@ -53,6 +53,15 @@ const Chat = ({threadId, setThreadId}) => {
     }, [threadId]);
 
 
+    const longPoll = (threadId) => {
+        // fetch(`/session/${threadId}`)
+        //     .then(response => response.json())
+        //     .then(data => {
+                
+        //     }
+        // )
+    }
+
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
@@ -64,7 +73,7 @@ const Chat = ({threadId, setThreadId}) => {
         setMessages((prevMessages) => [...prevMessages, { role: 'user', message: userInput }]);
         console.log(userInput)
         console.log(messages)
-        fetch(!threadId ? `/threads` : `/threads/${threadId}` , {
+        fetch(!threadId ? `/threads` : `/threads/${threadId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -79,23 +88,26 @@ const Chat = ({threadId, setThreadId}) => {
                 setMessages((prevMessages) => [...prevMessages, { role: 'assistant', message: data.message }]);
                 setThinking(false);
                 setThreadId(data.threadId);
+                // if (data.runningDriver) {
+                //     longPoll(threadId);
+                // }
             })
             .catch(error => {
                 setThinking(false);
                 setAngry(true);
                 console.error('There was a problem with the fetch operation:', error);
-            });
+            })
     };
 
     return (
         <>
             <Container style={{ margin: '1rem', padding: '1rem' }}>
                 <Segment style={{ display: 'flex', flexDirection: 'column', height: '50rem' }}>
-                        <Header as='h1' style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            Pilot Pete <span style={{ marginLeft: '0.5rem' }}><FaRobot color={angry?"red":null} size={50} /></span>
-                            <span style={{flex:1}}></span>
-                        </Header>
-                        <Divider style={{padding: 0, margin: 0}}/>
+                    <Header as='h1' style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        Pilot Pete <span style={{ marginLeft: '0.5rem' }}><FaRobot color={angry ? "red" : null} size={50} /></span>
+                        <span style={{ flex: 1 }}></span>
+                    </Header>
+                    <Divider style={{ padding: 0, margin: 0 }} />
                     <Container style={{ overflowY: 'auto', flex: 1 }}>
                         <Container style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                             {messages.map((msg, index) => (
@@ -125,10 +137,10 @@ const Chat = ({threadId, setThreadId}) => {
                                     }}
                                 />
                             )}
-                            <div  ref={messagesEndRef}/>
+                            <div ref={messagesEndRef} />
                         </Container>
                     </Container>
-                    <Divider style={{padding: 0, margin: 0, marginBottom:10}}/>
+                    <Divider style={{ padding: 0, margin: 0, marginBottom: 10 }} />
                     <Container>
                         <Grid>
                             <Grid.Row>
@@ -153,7 +165,7 @@ const Chat = ({threadId, setThreadId}) => {
                                     <Button
                                         color='blue'
                                         content='Submit'
-                                        onClick={()=>sendChatMessage()}
+                                        onClick={() => sendChatMessage()}
                                         fluid
                                         disabled={thinking}
                                     />
