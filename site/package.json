@@ -17,7 +17,9 @@
     "semantic-ui-react": "^2.1.5",
     "swagger-ui-dist": "^5.17.9",
     "swagger-ui-react": "^5.17.9",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "gsap": "^3.12.5",
+    "three": "^0.164.1"
   },
   "scripts": {
     "start": "./node_modules/.bin/react-scripts start",
