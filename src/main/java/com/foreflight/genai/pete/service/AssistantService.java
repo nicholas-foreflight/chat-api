@@ -42,7 +42,7 @@ public class AssistantService {
      * For first time request
      */
     public MessageDto postChat(@NonNull UserChatRequestDto chatRequestDto) {
-        return postChat(getThread().getId(), chatRequestDto, false);
+        return postChat(getThread().getId(), chatRequestDto);
     }
 
     public MessagesHistoryDto getChat(String threadId) {
@@ -62,12 +62,11 @@ public class AssistantService {
     }
 
     @SneakyThrows
-    public MessageDto postChat(@NonNull String threadId, @NonNull  UserChatRequestDto chatRequestDto, Boolean isDriverRunning) {
-        isDriverRunning = isDriverRunning == null ? isDriverRunning(threadId) : isDriverRunning;
+    public MessageDto postChat(@NonNull String threadId, @NonNull  UserChatRequestDto chatRequestDto) {
 
         openAIClient.addMessage(threadId, OpenAIThreadMessageDto.builder()
                 .role("user")
-                .content(promptService.buildAssistantHowToPrompt(isDriverRunning, chatRequestDto.getMessage()))
+                .content(chatRequestDto.getMessage())
                 .build());
 
         OpenAIThreadRunDto run = openAIClient.createRun(threadId, OpenAIThreadRunDto.builder()

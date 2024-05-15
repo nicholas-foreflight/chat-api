@@ -11,35 +11,37 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
-@RestController(value = "/chats")
-public class ChatController {
+@Deprecated(since = "2024-05-15")
+@RestController
+/**
+ * @deprecated
+ */
+public class ChatController {//NOSONAR
 
     @Autowired
     private AssistantService assistantService;
 
-    @GetMapping("/threads")
+    @GetMapping("/chats/threads")
     public OpenAIThreadDto getThread() {
         return assistantService.getThread();
     }
 
-    @PostMapping("/threads")
+    @PostMapping("/chats/threads")
     public MessageDto postChat(@RequestBody UserChatRequestDto chatRequestDto) {
         return assistantService.postChat(chatRequestDto);
     }
 
-    @PostMapping("/threads/{threadId}")
+    @PostMapping("/chats/threads/{threadId}")
     public MessageDto postChat(@PathVariable(value = "threadId") String threadId,
-                               @RequestParam(required = false) Boolean isDriverRunning,
                                @RequestBody UserChatRequestDto chatRequestDto) {
         log.info("Adding chat message 3");
-        return assistantService.postChat(threadId, chatRequestDto, isDriverRunning);
+        return assistantService.postChat(threadId, chatRequestDto);
     }
 
-    @GetMapping("/threads/{threadId}")
+    @GetMapping("/chats/threads/{threadId}")
     public MessagesHistoryDto getChat(@PathVariable(value = "threadId") String threadId) {
         return assistantService.getChat(threadId);
     }
