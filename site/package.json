@@ -6,6 +6,7 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "gsap": "^3.12.5",
     "lottie-react": "^2.4.0",
     "marked": "^12.0.2",
     "react": "^18.3.1",
@@ -17,9 +18,8 @@
     "semantic-ui-react": "^2.1.5",
     "swagger-ui-dist": "^5.17.9",
     "swagger-ui-react": "^5.17.9",
-    "web-vitals": "^2.1.4",
-    "gsap": "^3.12.5",
-    "three": "^0.164.1"
+    "three": "^0.164.1",
+    "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "./node_modules/.bin/react-scripts start",
@@ -44,5 +44,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "sass": "^1.77.1"
   }
 }

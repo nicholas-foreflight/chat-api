@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react';
 import { Container, Header } from 'semantic-ui-react';
-import { FaRobot } from 'react-icons/fa6';
 import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import './project.css';
+import './Project.module.scss'
 
 const Project = () => {
     useEffect(() => {
+
         gsap.registerPlugin(ScrollTrigger);
 
         function loadModel() {
@@ -349,8 +349,7 @@ const Project = () => {
     }, []);
 
     return (
-        <Container text style={{ marginTop: '7em' }}>
-            <Header as='h1'>Project Pete <FaRobot /></Header>
+        <Container text style={{ marginTop: '7em' }} >
             <div className="content">
                 <div className="loading">Loading</div>
                 <div className="trigger"></div>
