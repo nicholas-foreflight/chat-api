@@ -1,7 +1,6 @@
 package com.foreflight.genai.pete.service;
 
 import com.foreflight.genai.pete.client.dto.openai.OpenAIThreadDto;
-import com.foreflight.genai.pete.client.util.ChatUtils;
 import com.foreflight.genai.pete.controller.dto.MessageDto;
 import com.foreflight.genai.pete.service.domain.AgentAnswer;
 import com.foreflight.genai.pete.service.domain.AgentQuestion;
@@ -75,15 +74,14 @@ public class AgentService implements IAgentService {
         while (attempts <= MAX_RETRIES && !answer.isSuccessful()) {
             attempts++;
             try {
-                var rawResponse = ChatUtils.cleanJsonStringThenMap(
-                        assistantService.runAndWait(threadId, question.getMessage(), assistantId).getMessage(), RawAgentResponseDto.class);
-                var response = mapToAnswer(rawResponse);
+                var response = assistantService
+                        .runAndWaitWithVision(threadId, question.getMessage(), assistantId, null, RawAgentResponseDto.class);
 
-                if (isDriverRunning && response.isRunningDriver()) {
+                if (isDriverRunning && response.isActionableInApp()) {
                     assistantService.saveThreadMetadata(threadId, Map.of("DRIVER_STATUS", "RUNNING"));
-                    driverService.runDriverAsync(threadId, rawResponse);
+                    driverService.runDriverAsync(threadId, response);
                 }
-                return response;
+                answer.setMessage(response.getMessage());
             } catch (IllegalStateException e) {
                 log.warn("Bad response from ask(). attempt:{}, reties:{}", attempts, MAX_RETRIES);
             }
@@ -96,7 +94,7 @@ public class AgentService implements IAgentService {
         return AgentAnswer.builder()
                 .isSuccessful(true)
                 .isRunningDriver(m.isActionableInApp())
-                .message(m.getSummary())
+                .message(m.getMessage())
                 .build();
     }
 

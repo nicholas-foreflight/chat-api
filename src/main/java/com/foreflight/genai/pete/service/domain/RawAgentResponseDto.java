@@ -19,6 +19,6 @@ import java.util.List;
 public class RawAgentResponseDto {
     @JsonProperty("isActionableInApp")
     private boolean isActionableInApp;
-    private String summary;
+    private String message;
     private List<RawAgentInstructionDto> instructions;
 }
