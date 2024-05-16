@@ -18,6 +18,8 @@ public class AgentAnswer implements IAgentMessage {
     private boolean isSuccessful;
     private String message;
 
+    private boolean isRunningDriver;
+
     @Schema(defaultValue = "assistant")
     @Override
     public String getRole() {

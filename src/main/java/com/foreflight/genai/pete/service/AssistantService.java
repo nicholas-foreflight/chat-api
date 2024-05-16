@@ -24,9 +24,6 @@ public class AssistantService {
     private static final String ASSISTANT_ID_IN_USE = ASSISTANT_ID_PILOT_PETE_3_5;
 
     @Autowired
-    private PromptService promptService;
-
-    @Autowired
     private OpenAIClient openAIClient;
 
 
@@ -63,18 +60,28 @@ public class AssistantService {
 
     @SneakyThrows
     public MessageDto postChat(@NonNull String threadId, @NonNull  UserChatRequestDto chatRequestDto) {
+        return runAndWait(threadId, chatRequestDto.getMessage(), ASSISTANT_ID_IN_USE);
+    }
+
+    @SneakyThrows
+    public MessageDto runAndWait(@NonNull String threadId,
+                                 @NonNull String message,
+                                 @NonNull String assistantId) {
 
         openAIClient.addMessage(threadId, OpenAIThreadMessageDto.builder()
                 .role("user")
-                .content(chatRequestDto.getMessage())
+                .content(message)
                 .build());
 
         OpenAIThreadRunDto run = openAIClient.createRun(threadId, OpenAIThreadRunDto.builder()
-                .assistant_id(ASSISTANT_ID_IN_USE)
+                .assistant_id(assistantId)
                 .build());
         do {
             Thread.sleep(500); //NOSONAR
             run = openAIClient.getRun(threadId, run.getId());
+            if ("failed".equals(run.getStatus())) {
+                throw new IllegalStateException("Model run failed");
+            }
         } while (!"completed".equals(run.getStatus()));
 
         var response = openAIClient.getMessages(threadId);
@@ -87,12 +94,11 @@ public class AssistantService {
     }
 
     private boolean isDriverRunning(String threadId) {
-        return false;
+        return false; // TODO implement
     }
 
     public void saveThreadMetadata(String id, Map<String, Object> metadata) {
-        openAIClient.saveThread(OpenAIThreadDto.builder()
-                .id(id)
+        openAIClient.saveThread(id, OpenAIThreadDto.builder()
                 .metadata(metadata)
                 .build());
     }

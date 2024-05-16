@@ -1,15 +1,14 @@
-package com.foreflight.genai.pete.controller.dto;
+package com.foreflight.genai.pete.service.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.net.URI;
+import java.util.List;
 
 @Data
 @Builder
@@ -17,10 +16,9 @@ import java.net.URI;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DriverConfigurationDto {
-    private String threadId;
-    private String url;
-    @JsonIgnore
-    @Schema(hidden = true)
-    private URI uri;
+public class RawAgentResponseDto {
+    @JsonProperty("isActionableInApp")
+    private boolean isActionableInApp;
+    private String summary;
+    private List<RawAgentInstructionDto> instructions;
 }

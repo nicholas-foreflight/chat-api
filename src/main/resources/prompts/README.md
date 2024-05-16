@@ -8,6 +8,7 @@ This is where the Chat API prompts are kept
  - Add an Output spec on the bottom of the file
 
 ## Built in Tooling
+ - **Assistant Creation**: Run `./create-assistants.sh $API_KEY` to create assistants in your account. Then add the ids to the yml.
  - **Tags**: Add a tag with the prompt and these will be replaced dynammically in the Chat API
    ```
    {exampleOfATagName}

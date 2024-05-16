@@ -12,8 +12,6 @@ import org.springframework.stereotype.Service;
 import java.net.URI;
 import java.util.Map;
 
-import static java.util.Optional.ofNullable;
-
 @Slf4j
 @Service
 public class DriverConfigurationService {
@@ -28,7 +26,7 @@ public class DriverConfigurationService {
     @SneakyThrows
     public DriverConfigurationDto save(DriverConfigurationDto driverConfigurationDto) {
         Validate.notEmpty(driverConfigurationDto.getUrl(), "Driver must have a URL");
-        final var driverUri = URI.create("http://" + trimUrl(driverConfigurationDto.getUrl()));
+        final var driverUri = convertToUri(driverConfigurationDto.getUrl());
         driverConfigurationDto.setUrl(driverUri.toURL().toString());
 
         // Validate Driver
@@ -39,7 +37,6 @@ public class DriverConfigurationService {
             throw new IllegalArgumentException("Bad Driver URL. Driver either doesn't exists, in use, or broken.");
         }
 
-
         // Get Thread
         OpenAIThreadDto threadDto;
         if (driverConfigurationDto.getThreadId() == null) {
@@ -49,7 +46,6 @@ public class DriverConfigurationService {
         }
 
         assistantService.saveThreadMetadata(threadDto.getId(), Map.of("driverUri", driverUri));
-
         return driverConfigurationDto;
     }
 
@@ -58,6 +54,11 @@ public class DriverConfigurationService {
     }
 
     public DriverConfigurationDto get(String threadId) {
-        return DriverConfigurationDto.builder().threadId(threadId).url(ofNullable(assistantService.getThread(threadId).getMetadata().get("driverUri")).orElse("").toString()).build();
+        var url = "10.122.0.151:8182"; // ofNullable(assistantService.getThread(threadId).getMetadata().get("driverUri")).orElse("").toString();
+        return DriverConfigurationDto.builder().threadId(threadId).url(url).uri(convertToUri(url)).build();
+    }
+
+    private URI convertToUri(String s) {
+        return URI.create("http://" + trimUrl(s));
     }
 }

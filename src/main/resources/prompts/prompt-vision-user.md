@@ -1,0 +1,3 @@
+- The top left corner is `x=0` and `y=0`
+- The bottom right corner is `x={imageWidth}` and `y={imageHeight}`
+- The `action` is:`{context}`

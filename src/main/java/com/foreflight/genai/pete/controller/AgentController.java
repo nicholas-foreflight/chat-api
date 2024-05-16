@@ -20,19 +20,15 @@ public class AgentController {
     @Autowired
     private IAgentService agentService;
 
-    @GetMapping("/threads")
-    public AgentSession getSession() {
-        return agentService.getSession();
-    }
-
     @GetMapping("/threads/{threadId}")
     public AgentSession getSession(@PathVariable(value = "threadId") String threadId) {
         return agentService.getSession(threadId);
     }
 
     @PostMapping("/threads")
-    public AgentAnswer ask(@RequestBody AgentQuestion question) {
-        return agentService.ask(agentService.getSession().getThreadId(), question, null);
+    public AgentAnswer ask(@RequestBody AgentQuestion question,
+                           @RequestParam(required = false) Boolean isDriverRunning) {
+        return agentService.ask(agentService.getSession().getThreadId(), question, isDriverRunning);
     }
 
     @PostMapping("/threads/{threadId}")

@@ -2,6 +2,15 @@
 #
 #
 
+assistants:
+  pete:
+    how-to-with-driver: 'asst_bLmIRPgeOkZRFf1B5wBNHLzD'
+    how-to-without-driver: 'asst_kKTti9kE9dpnyu2iu593FDw5'
+  driver.vision:
+    tap: 'asst_dQSkjvxn8tgw4Sayz0uehLMS'
+    swipe: 'asst_q3OcMQZrhDNjSqhNgmwfF5kX'
+
+
 spring:
   application.name: pete
   cloud:
