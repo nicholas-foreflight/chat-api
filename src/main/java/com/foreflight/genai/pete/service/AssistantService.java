@@ -2,12 +2,16 @@ package com.foreflight.genai.pete.service;
 
 import com.foreflight.genai.pete.client.OpenAIClient;
 import com.foreflight.genai.pete.client.dto.openai.OpenAIThreadDto;
-import com.foreflight.genai.pete.client.dto.openai.OpenAIThreadMessageDto;
+import com.foreflight.genai.pete.client.dto.openai.OpenAIThreadMessageRequestDto;
 import com.foreflight.genai.pete.client.dto.openai.OpenAIThreadMessageResponseDto;
 import com.foreflight.genai.pete.client.dto.openai.OpenAIThreadRunDto;
+import com.foreflight.genai.pete.client.util.ChatUtils;
 import com.foreflight.genai.pete.controller.dto.MessageDto;
 import com.foreflight.genai.pete.controller.dto.MessagesHistoryDto;
 import com.foreflight.genai.pete.controller.dto.UserChatRequestDto;
+import com.foreflight.genai.pete.service.domain.ByteArrayMultipartFile;
+import com.foreflight.genai.pete.service.domain.VisionMetadata;
+import jakarta.validation.constraints.NotNull;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,17 +71,40 @@ public class AssistantService {
     public MessageDto runAndWait(@NonNull String threadId,
                                  @NonNull String message,
                                  @NonNull String assistantId) {
+        return runAndWait(threadId, message, assistantId, null);
+    }
 
-        openAIClient.addMessage(threadId, OpenAIThreadMessageDto.builder()
+    /**
+     * Runs assistant, then maps json response to requested response type
+     */
+    @SneakyThrows
+    public <T> T runAndWaitWithVision(@NonNull String threadId,
+                                      @NonNull String message,
+                                      @NonNull String assistantId,
+                                      @NotNull VisionMetadata visionMetadata,
+                                      @NotNull Class<T> responseType) {
+        return ChatUtils.cleanJsonStringThenMap(
+                runAndWait(threadId, message, assistantId, visionMetadata).getMessage(),
+                responseType);
+    }
+
+    @SneakyThrows
+    private MessageDto runAndWait(@NonNull String threadId,
+                                 @NonNull String message,
+                                 @NonNull String assistantId,
+                                 VisionMetadata visionMetadata) {
+        String fileId = getAFileIdIfNeeded(visionMetadata);
+
+        openAIClient.addMessage(threadId, OpenAIThreadMessageRequestDto.builder()
                 .role("user")
-                .content(message)
+                .content(renderMessageContent(message, fileId))
                 .build());
 
         OpenAIThreadRunDto run = openAIClient.createRun(threadId, OpenAIThreadRunDto.builder()
                 .assistant_id(assistantId)
                 .build());
         do {
-            Thread.sleep(500); //NOSONAR
+            Thread.sleep(2000);//NOSONAR
             run = openAIClient.getRun(threadId, run.getId());
             if ("failed".equals(run.getStatus())) {
                 throw new IllegalStateException("Model run failed");
@@ -93,13 +120,48 @@ public class AssistantService {
                 .build();
     }
 
-    private boolean isDriverRunning(String threadId) {
-        return false; // TODO implement
-    }
+
 
     public void saveThreadMetadata(String id, Map<String, Object> metadata) {
         openAIClient.saveThread(id, OpenAIThreadDto.builder()
                 .metadata(metadata)
                 .build());
+    }
+
+
+    private boolean isDriverRunning(String threadId) {
+        return false; // TODO implement
+    }
+
+    private String getAFileIdIfNeeded(VisionMetadata visionMetadata) {
+        String fileId = null;
+        if (visionMetadata != null) {
+            var response = openAIClient.uploadFile("vision", ByteArrayMultipartFile.builder()
+                    .name("screenshot.png")
+                    .originalFilename("screenshot.png")
+                    .contentType("image/png")
+                    .content(visionMetadata.getScreenshot())
+                    .build());
+            fileId = response.getId();
+        }
+        return fileId;
+    }
+
+    private List<OpenAIThreadMessageRequestDto.Content> renderMessageContent(String message, String fileId) {
+        var contentText = OpenAIThreadMessageRequestDto.Content.builder()
+                .type("text")
+                .text(message)
+                .build();
+
+        if (fileId == null) {
+            return List.of(contentText);
+        }
+
+        var contentFile = OpenAIThreadMessageRequestDto.Content.builder()
+                .type("image_file")
+                .image_file(OpenAIThreadMessageRequestDto.ImageFile.builder().file_id(fileId).build())
+                .build();
+
+        return List.of(contentText, contentFile);
     }
 }

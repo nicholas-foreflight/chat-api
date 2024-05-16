@@ -17,23 +17,23 @@ public class PromptService {
 
     private static final String PROMPT_BASE_PATH = "prompts/";
 
-    public String buildAssistantHowToPrompt(boolean isDriverRunning, String userPrompt) {
-        var fileName = isDriverRunning ?
-                "prompt-assistant-how-to-with-device.md"
-                : "prompt-assistant-how-to-without-device.md";
-        var replacements = Map.of("userPrompt", userPrompt);
-        return loadFileAndReplace(fileName, replacements);
-    }
+//    public String buildAssistantHowToPrompt(boolean isDriverRunning, String userPrompt) {
+//        var fileName = isDriverRunning ?
+//                "prompt-assistant-how-to-with-device.md"
+//                : "prompt-assistant-how-to-without-device.md";
+//        var replacements = Map.of("userPrompt", userPrompt);
+//        return loadFileAndReplace(fileName, replacements);
+//    }
 
     public String buildVisionAssistantGetCoordinatesClickPrompt(VisionMetadata visionMetadata) {
         var fileName ="prompt-vision-assistant-get-coordinates-tap.md";
-        var replacements = visionMetadata.toMap();
+        var replacements = Map.of("{context}",""); // visionMetadata.toMap(); // TODO
         return loadFileAndReplace(fileName, replacements);
     }
 
     public String buildVisionAssistantGetCoordinatesSwipePrompt(VisionMetadata visionMetadata) {
         var fileName ="prompt-vision-assistant-get-coordinates-tap.md";
-        var replacements = visionMetadata.toMap();
+        var replacements = Map.of("{context}",""); // visionMetadata.toMap(); // TODO
         return loadFileAndReplace(fileName, replacements);
     }
 
