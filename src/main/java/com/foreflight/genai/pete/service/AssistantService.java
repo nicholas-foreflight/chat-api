@@ -1,5 +1,6 @@
 package com.foreflight.genai.pete.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.foreflight.genai.pete.client.OpenAIClient;
 import com.foreflight.genai.pete.client.dto.openai.OpenAIThreadDto;
 import com.foreflight.genai.pete.client.dto.openai.OpenAIThreadMessageRequestDto;
@@ -14,6 +15,7 @@ import com.foreflight.genai.pete.service.domain.VisionMetadata;
 import jakarta.validation.constraints.NotNull;
 import lombok.NonNull;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,11 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class AssistantService {
-    private static final String ASSISTANT_ID_PILOT_PETE_3_5 = "asst_PHuD00M9tkqC9NYKwgkXlTVo"; // gpt-3.5-turbo //NOSONAR
-    private static final String ASSISTANT_ID_PILOT_PETE_4_o = "asst_OzdhCYLi3ww5v0BIR2kxKnHJ"; // gpt-4o-2024-05-13 //NOSONAR
-    private static final String ASSISTANT_ID_IN_USE = ASSISTANT_ID_PILOT_PETE_3_5;
+    private static final String ASSISTANT_ID_IN_USE = "asst_IpCAAv1Hzm6Yb6wgDdQOaSeB";
 
     @Autowired
     private OpenAIClient openAIClient;
@@ -83,9 +84,13 @@ public class AssistantService {
                                       @NonNull String assistantId,
                                       @NotNull VisionMetadata visionMetadata,
                                       @NotNull Class<T> responseType) {
-        return ChatUtils.cleanJsonStringThenMap(
-                runAndWait(threadId, message, assistantId, visionMetadata).getMessage(),
-                responseType);
+        var response = runAndWait(threadId, message, assistantId, visionMetadata).getMessage();
+        try {
+            return ChatUtils.cleanJsonStringThenMap(response, responseType);
+        } catch (JsonProcessingException e) {
+            log.warn("Model did not provide proper json: {}", assistantId);
+            return ChatUtils.failedThenMap(response, responseType);
+        }
     }
 
     @SneakyThrows

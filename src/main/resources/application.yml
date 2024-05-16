@@ -4,11 +4,11 @@
 
 assistants:
   pete:
-    how-to-with-driver: 'asst_bLmIRPgeOkZRFf1B5wBNHLzD'
-    how-to-without-driver: 'asst_kKTti9kE9dpnyu2iu593FDw5'
+    how-to-with-driver: 'asst_a6thIShmnKwABWH8lgcduE0Z'
+    how-to-without-driver: 'asst_uSipTRjks8LxWykJlRXWU5GO'
   driver.vision:
-    tap: 'asst_dQSkjvxn8tgw4Sayz0uehLMS'
-    swipe: 'asst_q3OcMQZrhDNjSqhNgmwfF5kX'
+    tap: 'asst_nfQ7WB5j41W2lJ52Le3UGyb4'
+    swipe: 'asst_0ULYI4yBDxPZUoRwYZxvK0fV'
 
 
 spring:
@@ -38,3 +38,4 @@ spring:
 logging:
   level:
     com.foreflight.genai.pete.client: debug
+

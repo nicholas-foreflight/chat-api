@@ -17,4 +17,5 @@ import lombok.NoArgsConstructor;
 public class RawAgentInstructionDto {
     private String title;
     private String action;
+    private VisionMetadata.Action asEnum;
 }

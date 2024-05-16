@@ -19,11 +19,12 @@ Json Schema:
 ```yml
 {
     "isActionableInApp": true, # `true` if you believe your instructions can be ran in the ForeFlight iOS App, else `false`
-    "summary": "A summary of the instructions' array titles below"
-    "instructions": [
+    "message": "A summary of the instructions' array titles below" # If not isActionableInApp provide a normal message back, else isActionableInApp then communicate to the user you will do this for them and summarize what you will be doing
+    "instructions": [ # Empty if isActionableInApp==false, else be detailed and provide every step so that we don't get off track
         {
             "title": "This is shown to the user",
-            "action": "This is feed to another LLM tell it what action to perform"
+            "asEnum": "TAP", # Can be TAP, or SWIPE
+            "action": "This is feed to another LLM tell it what action to perform and where to look for the button or field"
         }
     ]
 }
