@@ -26,13 +26,13 @@ public class PromptService {
     }
 
     public String buildVisionAssistantGetCoordinatesClickPrompt(VisionMetadata visionMetadata) {
-        var fileName ="prompt-vision-assistant-get-coordinates-click.md";
+        var fileName ="prompt-vision-assistant-get-coordinates-tap.md";
         var replacements = visionMetadata.toMap();
         return loadFileAndReplace(fileName, replacements);
     }
 
     public String buildVisionAssistantGetCoordinatesSwipePrompt(VisionMetadata visionMetadata) {
-        var fileName ="prompt-vision-assistant-get-coordinates-click.md";
+        var fileName ="prompt-vision-assistant-get-coordinates-tap.md";
         var replacements = visionMetadata.toMap();
         return loadFileAndReplace(fileName, replacements);
     }

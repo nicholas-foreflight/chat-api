@@ -55,7 +55,7 @@ public class VisionMetadata {
     }
 
     public enum Action {
-        CLICK,
+        TAP,
         SWIPE,
         TYPE
     }

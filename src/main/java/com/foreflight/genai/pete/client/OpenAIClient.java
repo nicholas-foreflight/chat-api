@@ -21,8 +21,8 @@ public interface OpenAIClient {
     @GetMapping("/v1/threads/{threadId}")
     OpenAIThreadDto getThread(@PathVariable("threadId") String threadId);
 
-    @PostMapping("/v1/threads")
-    void saveThread(@RequestBody OpenAIThreadDto openAIThreadDto);
+    @PostMapping("/v1/threads/{threadId}")
+    void saveThread(@PathVariable("threadId") String threadId, @RequestBody OpenAIThreadDto openAIThreadDto);
 
     @PostMapping("/v1/threads/{threadId}/messages")
     Map<String, Object> addMessage(@PathVariable("threadId") String threadId, @RequestBody OpenAIThreadMessageDto message);

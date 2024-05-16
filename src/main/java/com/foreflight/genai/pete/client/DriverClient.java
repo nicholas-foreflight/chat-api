@@ -22,7 +22,7 @@ public interface DriverClient {
     @GetMapping("/status")
     void status(URI baseUri);
 
-    @GetMapping("/capture")
+    @GetMapping(value = "/capture")
     byte[] capture(URI baseUri);
 
     @PostMapping("/tap")
