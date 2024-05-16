@@ -1,7 +1,7 @@
 package com.foreflight.genai.pete.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foreflight.genai.pete.client.dto.openai.OpenAIThreadDto;
+import com.foreflight.genai.pete.client.util.ChatUtils;
 import com.foreflight.genai.pete.controller.dto.MessageDto;
 import com.foreflight.genai.pete.service.domain.AgentAnswer;
 import com.foreflight.genai.pete.service.domain.AgentQuestion;
@@ -16,8 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
 
@@ -76,9 +74,9 @@ public class AgentService implements IAgentService {
 
         while (attempts <= MAX_RETRIES && !answer.isSuccessful()) {
             attempts++;
-
             try {
-                var rawResponse = mapToRawType(assistantService.runAndWait(threadId, question.getMessage(), assistantId));
+                var rawResponse = ChatUtils.cleanJsonStringThenMap(
+                        assistantService.runAndWait(threadId, question.getMessage(), assistantId).getMessage(), RawAgentResponseDto.class);
                 var response = mapToAnswer(rawResponse);
 
                 if (isDriverRunning && response.isRunningDriver()) {
@@ -94,14 +92,7 @@ public class AgentService implements IAgentService {
     }
 
     @SneakyThrows
-    private RawAgentResponseDto mapToRawType(MessageDto m) {
-        String payload = cleanJsonString(m.getMessage());
-        return new ObjectMapper().readValue(payload, RawAgentResponseDto.class);
-    }
-
-    @SneakyThrows
     private AgentAnswer mapToAnswer(RawAgentResponseDto m) {
-
         return AgentAnswer.builder()
                 .isSuccessful(true)
                 .isRunningDriver(m.isActionableInApp())
@@ -122,17 +113,5 @@ public class AgentService implements IAgentService {
                     .message(m.getMessage())
                     .build();
         }
-    }
-
-    public static String cleanJsonString(String dirtyJson) {
-        // Regular expression to match unwanted characters before and after JSON object
-        String regex = "^[^{]*|[^}]*$";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(dirtyJson);
-
-        // Replace all unwanted characters with an empty string
-        String cleanJson = matcher.replaceAll("");
-
-        return cleanJson;
     }
 }
