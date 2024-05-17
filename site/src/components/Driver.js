@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Header, Button, Grid, Container, Dropdown, Message, Segment } from "semantic-ui-react";
 import Screen from './Screen';
 
-const Driver = () => {
+const Driver = ({ setIsDriverRunning }) => {
     const [driverList, setDriverList] = useState([{
         name: 'iPad 1',
         ip: '10.122.0.151',
@@ -31,7 +31,7 @@ const Driver = () => {
     }, []);
 
     return (
-        <Container style={{ margin: '1rem', padding: '1rem' }}>
+        <Container style={{ margin: '0rem', padding: '0rem' }}>
             <Container>
                 <Header className="top attached">App Driver</Header>
                 <Segment attached compact>
@@ -67,6 +67,7 @@ const Driver = () => {
                                     onClick={() => {
                                         setDriverIP();
                                         setIsDriverConnected(false);
+                                        setIsDriverRunning(false);
                                     }}
                                     floated='right'
                                 >
@@ -79,7 +80,7 @@ const Driver = () => {
                 {driverIP && (
                     <Container>
                         <Segment attached>
-                            <Screen setIsDriverConnected={setIsDriverConnected} driverIp={driverIP} />
+                            <Screen setIsDriverConnected={setIsDriverConnected} driverIp={driverIP} setIsDriverRunning={setIsDriverRunning} />
                         </Segment>
                     </Container>
                 )}

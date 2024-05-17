@@ -1,4 +1,4 @@
-package com.foreflight.genai.pete.client.util;
+package com.foreflight.genai.pete.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,7 +27,7 @@ public class ChatUtils {
 
     public static <T> T failedThenMap(String response, Class<T> responseType) {
         if (responseType.equals(RawAgentResponseDto.class)) {
-            return (T) RawAgentResponseDto.builder().message(response).build();//NOSONAR
+            return (T) RawAgentResponseDto.builder().message(response.replace("\n\n", "\n")).build();//NOSONAR
         }
         throw new NotImplementedException("Need mapping for {}", responseType.getName());
     }

@@ -2,12 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import Lottie from "lottie-react";
 import loading from "./loading.json";
 
-const Screen = ({driverIp, setIsDriverConnected}) => {
+const Screen = ({driverIp, setIsDriverConnected, setIsDriverRunning}) => {
     const [image, setImage] = useState('');
     const ws = useRef(null);
 
     useEffect(() => {
         setIsDriverConnected(false);
+        setIsDriverRunning(false);
 
         const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
         const host = driverIp;
@@ -22,6 +23,7 @@ const Screen = ({driverIp, setIsDriverConnected}) => {
         ws.current.onmessage = (event) => {
             try {
                 setIsDriverConnected(true);
+                setIsDriverRunning(true);
                 const data = JSON.parse(event.data);
                 if (data.message) {
                     const base64Image = `data:image/png;base64,${data.message}`;
@@ -38,6 +40,7 @@ const Screen = ({driverIp, setIsDriverConnected}) => {
 
         ws.current.onclose = () => {
             setIsDriverConnected(false);
+            setIsDriverRunning(false);
             console.log("WebSocket connection closed");
         };
 

@@ -16,8 +16,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.commons.lang3.BooleanUtils.isTrue;
-
 @Slf4j
 @Service
 public class AgentService implements IAgentService {
@@ -61,8 +59,7 @@ public class AgentService implements IAgentService {
                 .build();
     }
 
-    public AgentAnswer ask(String threadId, AgentQuestion question, Boolean isDriverRunning) {
-        isDriverRunning = isTrue(isDriverRunning); // TODO if null poll Driver
+    public AgentAnswer ask(String threadId, AgentQuestion question, boolean isDriverRunning) {
         int attempts = 0;
         final String assistantId = isDriverRunning ? assistantIdWithDriver : assistantIdWithoutDriver;
         final AgentAnswer answer = AgentAnswer.builder()
@@ -74,16 +71,18 @@ public class AgentService implements IAgentService {
         while (attempts <= MAX_RETRIES && !answer.isSuccessful()) {
             attempts++;
             try {
+                var vision = isDriverRunning ? driverService.capture(threadId) : null;
                 var response = assistantService
-                        .runAndWaitWithVision(threadId, question.getMessage(), assistantId, null, RawAgentResponseDto.class);
+                        .runAndWaitWithVision(threadId, question.getMessage(), assistantId, vision, RawAgentResponseDto.class);
 
                 if (isDriverRunning && response.isActionableInApp()) {
-                    assistantService.saveThreadMetadata(threadId, Map.of("DRIVER_STATUS", "RUNNING"));
+                    assistantService.saveThreadMetadata(threadId, Map.of("driverStatus", "RUNNING"));
                     driverService.runDriverAsync(threadId, response);
                 }
                 answer.setMessage(response.getMessage());
+                return answer;
             } catch (IllegalStateException e) {
-                log.warn("Bad response from ask(). attempt:{}, reties:{}", attempts, MAX_RETRIES);
+                log.warn("Bad response from ask(). attempt:{}, reties:{}, response:{}", attempts, MAX_RETRIES);
             }
         }
         return answer;
