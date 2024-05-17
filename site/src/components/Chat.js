@@ -6,7 +6,7 @@ import remarkGfm from 'https://esm.sh/remark-gfm@4'
 import Dots from './Dots';
 
 
-const Chat = ({ threadId, setThreadId }) => {
+const Chat = ({ threadId, setThreadId, isDriverRunning }) => {
     const welcomeMessage = [{ role: 'assistant', message: 'Welcome to Pilot Pete! Ask me any questions you have about ForeFlight' }];
 
     // State to store the user's input in the message field
@@ -73,14 +73,17 @@ const Chat = ({ threadId, setThreadId }) => {
         setMessages((prevMessages) => [...prevMessages, { role: 'user', message: userInput }]);
         console.log(userInput)
         console.log(messages)
-        fetch(!threadId ? `/threads` : `/threads/${threadId}`, {
+        const url = threadId ? `/threads/${threadId}` : `/threads`;
+        const queryString = isDriverRunning === true ? '?isDriverRunning=true' : '';
+        const fullUrl = `${url}${queryString}`;
+        fetch(fullUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
             },
 
-            body: JSON.stringify({ message: userInput }),
+            body: JSON.stringify({ message: userInput}),
         })
             .then(response => response.json())
             .then(data => {
@@ -101,7 +104,7 @@ const Chat = ({ threadId, setThreadId }) => {
 
     return (
         <>
-            <Container style={{ margin: '1rem', padding: '1rem' }}>
+            <Container style={{ margin: '0rem', padding: '0rem', paddingRight: '2rem' }}>
                 <Segment style={{ display: 'flex', flexDirection: 'column', height: '50rem' }}>
                     <Header as='h1' style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         Pilot Pete <span style={{ marginLeft: '0.5rem' }}><FaRobot color={angry ? "red" : null} size={50} /></span>
@@ -144,11 +147,11 @@ const Chat = ({ threadId, setThreadId }) => {
                     <Container>
                         <Grid>
                             <Grid.Row>
-                                <Grid.Column width={14}>
+                                <Grid.Column width={16}>
                                     <form onSubmit={(e) => {
                                         e.preventDefault();
                                         sendChatMessage();
-                                    }} style={{ width: '100%' }}>
+                                    }} style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
                                         <Input
                                             tabIndex={0}
                                             disabled={thinking}
@@ -157,18 +160,15 @@ const Chat = ({ threadId, setThreadId }) => {
                                             value={userInput}
                                             onChange={(e) => setUserInput(e.target.value)}
                                             loading={thinking}
-                                            style={{ paddingRight: '40px' }}
+                                            style={{ flexGrow: 1, marginRight: '10px' }}
+                                        />
+                                        <Button
+                                            color='blue'
+                                            content='Submit'
+                                            onClick={() => sendChatMessage()}
+                                            disabled={thinking}
                                         />
                                     </form>
-                                </Grid.Column>
-                                <Grid.Column width={2}>
-                                    <Button
-                                        color='blue'
-                                        content='Submit'
-                                        onClick={() => sendChatMessage()}
-                                        fluid
-                                        disabled={thinking}
-                                    />
                                 </Grid.Column>
                             </Grid.Row>
                         </Grid>

@@ -27,14 +27,15 @@ public class AgentController {
 
     @PostMapping("/threads")
     public AgentAnswer ask(@RequestBody AgentQuestion question,
-                           @RequestParam(required = false) Boolean isDriverRunning) {
+                           @RequestParam(required = false) boolean isDriverRunning) {
         return agentService.ask(agentService.getSession().getThreadId(), question, isDriverRunning);
     }
 
     @PostMapping("/threads/{threadId}")
     public AgentAnswer ask(@PathVariable(value = "threadId") String threadId,
-                               @RequestParam(required = false) Boolean isDriverRunning,
+                               @RequestParam(required = false) boolean isDriverRunning,
                                @RequestBody AgentQuestion question) {
+        // TODO, if null isDriverRunning, then check
         return agentService.ask(threadId, question, isDriverRunning);
     }
 }

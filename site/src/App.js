@@ -44,14 +44,13 @@ const App = () => {
                         </Dropdown>
                     </Container>
                 </Menu>
-
-                <Container style={{ marginTop: '7em' }}>
+                <Container fluid style={{ marginTop: '4em' }}>
                     <Routes>
                         <Route path='/' element={<Thread threadId={threadId} setThreadId={setThreadId} />} />
                         <Route path='/project' element={<Project />} />
                         <Route path='/documentation-chat' element={<ChatDocumentation />} />
                         <Route path='/documentation-driver' element={<DriverDocumentation />} />
-                        <Route path='/thread/:id' element={<Thread threadId={threadId} setThreadId={setThreadId} />} /> {/* Add the new route */}
+                        <Route path='/thread/:id' element={<Thread threadId={threadId} setThreadId={setThreadId} />} />
                     </Routes>
                 </Container>
             </div>

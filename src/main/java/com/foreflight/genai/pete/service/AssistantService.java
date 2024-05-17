@@ -6,7 +6,7 @@ import com.foreflight.genai.pete.client.dto.openai.OpenAIThreadDto;
 import com.foreflight.genai.pete.client.dto.openai.OpenAIThreadMessageRequestDto;
 import com.foreflight.genai.pete.client.dto.openai.OpenAIThreadMessageResponseDto;
 import com.foreflight.genai.pete.client.dto.openai.OpenAIThreadRunDto;
-import com.foreflight.genai.pete.client.util.ChatUtils;
+import com.foreflight.genai.pete.util.ChatUtils;
 import com.foreflight.genai.pete.controller.dto.MessageDto;
 import com.foreflight.genai.pete.controller.dto.MessagesHistoryDto;
 import com.foreflight.genai.pete.controller.dto.UserChatRequestDto;
@@ -134,20 +134,20 @@ public class AssistantService {
     }
 
 
-    private boolean isDriverRunning(String threadId) {
-        return false; // TODO implement
-    }
-
     private String getAFileIdIfNeeded(VisionMetadata visionMetadata) {
         String fileId = null;
-        if (visionMetadata != null) {
-            var response = openAIClient.uploadFile("vision", ByteArrayMultipartFile.builder()
-                    .name("screenshot.png")
-                    .originalFilename("screenshot.png")
-                    .contentType("image/png")
-                    .content(visionMetadata.getScreenshot())
-                    .build());
-            fileId = response.getId();
+        try {
+            if (visionMetadata != null) {
+                var response = openAIClient.uploadFile("vision", ByteArrayMultipartFile.builder()
+                        .name("screenshot.png")
+                        .originalFilename("screenshot.png")
+                        .contentType("image/png")
+                        .content(visionMetadata.getScreenshot())
+                        .build());
+                fileId = response.getId();
+            }
+        } catch (Exception e) {
+            log.warn("Cannot upload file. {}", e.getMessage());
         }
         return fileId;
     }

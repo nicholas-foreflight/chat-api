@@ -1,4 +1,4 @@
-package com.foreflight.genai.pete;
+package com.foreflight.genai.pete.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;

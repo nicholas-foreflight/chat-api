@@ -13,10 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class VisionMetadata {
 
-    private Integer imageHeight;
-    private Integer imageWidth;
+    private final Integer imageHeight = 1640;
+    private final Integer imageWidth = 2360;
 
-    private Action action;
+    private Action action = Action.TAP;
     private String context;
     private byte[] screenshot;
 

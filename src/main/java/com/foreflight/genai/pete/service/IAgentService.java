@@ -10,5 +10,5 @@ public interface IAgentService {
 
     public AgentSession getSession(String threadId);
 
-    public AgentAnswer ask(String threadId, AgentQuestion question, Boolean isDriverRunning);
+    public AgentAnswer ask(String threadId, AgentQuestion question, boolean isDriverRunning);
 }
